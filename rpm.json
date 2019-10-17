@@ -1,0 +1,7 @@
+{
+  "publish": {
+    "PACKAGE": "multitail",
+    "GH_USER": "jc21-rpm",
+    "VERSION": "6.4.2"
+  }
+}
