@@ -1,19 +1,17 @@
 %define debug_package %{nil}
 
-Name:		  multitail
-Version:	6.4.2
-Release:	1%{?dist}
-Summary:	View one or multiple files like tail but with multiple windows
+Name:          multitail
+Version:       6.4.2
+Release:       1%{?dist}
+Summary:       View one or multiple files like tail but with multiple windows
+Group:         Applications/Text
+License:       GPLv2
+URL:           http://www.vanheusden.com/multitail/
+Source:        https://github.com/halturin/%{name}/archive/master.zip
+Patch0:        Unversioned-doc-dir.patch
+BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildRequires: ncurses-devel
 
-Group:		Applications/Text
-# License GPLv2 specified in readme.txt
-License:	GPLv2
-URL:		http://www.vanheusden.com/multitail/
-#Source:		http://www.vanheusden.com/multitail/multitail-%{version}.tgz
-Patch0:		Unversioned-doc-dir.patch
-BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-
-BuildRequires:	ncurses-devel
 # For unversioned doc dir
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
@@ -35,20 +33,17 @@ external software, MultiTail can mimic the functionality of tools like
 'watch' and such.
 
 %prep
-wget http://www.vanheusden.com/multitail/%{name}-%{version}.tgz
-tar -xzf %{name}-%{version}.tgz
-cd %{name}-%{version}
+%setup -q -n %{name}-master
 %patch0 -p1
 
 %build
-cd %{name}-%{version}
 CFLAGS="%{optflags}" make %{?_smp_mflags}
 
 # Fix up doc encoding
 for f in readme.txt; do
-    iconv -f ISO88592 -t UTF8 < $f > $f.utf8 && \
-    touch -r $f $f.utf8 && \
-    mv $f.utf8 $f
+iconv -f ISO88592 -t UTF8 < $f > $f.utf8 && \
+touch -r $f $f.utf8 && \
+mv $f.utf8 $f
 done
 
 # Fix up examples permissions
@@ -56,7 +51,6 @@ chmod 644 conversion-scripts/colors-example.*
 chmod 644 conversion-scripts/convert-*.pl
 
 %install
-cd %{name}-%{version}
 rm -rf %{buildroot}
 # Create necessary directories
 mkdir -p %{buildroot}/%{_pkgdocdir} %{buildroot}%{_bindir} %{buildroot}%{_mandir}/man1 %{buildroot}%{_sysconfdir} %{buildroot}%{_pkgdocdir}
@@ -73,7 +67,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc %{name}-%{version}/manual*.html %{name}-%{version}/license.txt %{name}-%{version}/readme.txt %{name}-%{version}/conversion-scripts/colors-example.*
+%doc manual*.html license.txt readme.txt conversion-scripts/colors-example.*
 %config(noreplace) %{_sysconfdir}/multitail.conf
 %{_sysconfdir}/multitail/
 %{_bindir}/multitail
