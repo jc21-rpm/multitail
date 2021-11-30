@@ -1,13 +1,13 @@
 %define debug_package %{nil}
 
 Name:          multitail
-Version:       6.4.2
+Version:       6.5.0
 Release:       1%{?dist}
 Summary:       View one or multiple files like tail but with multiple windows
 Group:         Applications/Text
 License:       GPLv2
 URL:           http://www.vanheusden.com/multitail/
-Source:        https://github.com/halturin/%{name}/archive/master.zip
+Source:        %{name}-%{version}.tgz
 Patch0:        Unversioned-doc-dir.patch
 BuildRoot:     %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires: ncurses-devel
@@ -33,7 +33,7 @@ external software, MultiTail can mimic the functionality of tools like
 'watch' and such.
 
 %prep
-%setup -q -n %{name}-master
+%setup -q -n %{name}-%{version}
 %patch0 -p1
 
 %build
@@ -54,13 +54,13 @@ chmod 644 conversion-scripts/convert-*.pl
 rm -rf %{buildroot}
 # Create necessary directories
 mkdir -p %{buildroot}/%{_pkgdocdir} %{buildroot}%{_bindir} %{buildroot}%{_mandir}/man1 %{buildroot}%{_sysconfdir} %{buildroot}%{_pkgdocdir}
-make DESTDIR=%{buildroot} DOCDIR=%{buildroot}%{_pkgdocdir} install
+make DESTDIR=%{buildroot} DOCDIR=%{buildroot}%{_pkgdocdir} PREFIX=%{_exec_prefix} install
 
 # move the configuration in the right place
-mv %{buildroot}%{_sysconfdir}/multitail.conf{.new,}
+mv %{buildroot}%{_exec_prefix}%{_sysconfdir}/multitail.conf{.new,}
 
 # remove the examples (installed as docs)
-rm %{buildroot}%{_sysconfdir}/multitail/colors-example.*
+rm %{buildroot}%{_exec_prefix}%{_sysconfdir}/multitail/colors-example.*
 
 %clean
 rm -rf %{buildroot}
@@ -68,12 +68,15 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc manual*.html license.txt readme.txt conversion-scripts/colors-example.*
-%config(noreplace) %{_sysconfdir}/multitail.conf
-%{_sysconfdir}/multitail/
+%config(noreplace) %{_exec_prefix}%{_sysconfdir}/multitail.conf
+%{_exec_prefix}%{_sysconfdir}/multitail/
 %{_bindir}/multitail
 %{_mandir}/man1/multitail.1*
 
 %changelog
+* Tue Nov 30 2021 Jamie Curnow <jc@jc21.com> - 6.5.0
+- v6.5.0
+
 * Wed Dec 23 2015 Jon Stanley <jonstanley@gmail.com> - 6.4.2-1
 - Update to 6.4.2
 - Initial build for EPEL-7
