@@ -2,7 +2,7 @@
 
 Name:          multitail
 Version:       6.5.0
-Release:       1%{?dist}
+Release:       1
 Summary:       View one or multiple files like tail but with multiple windows
 Group:         Applications/Text
 License:       GPLv2
